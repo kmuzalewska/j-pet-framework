@@ -17,5 +17,5 @@ def parse():
 	    if ((root.findall('.//FatalError'))!=[]):
                 print "Error detected"
 	        return 1
-	
- 
+
+parse()
