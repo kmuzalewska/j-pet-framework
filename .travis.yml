@@ -33,5 +33,5 @@ script:
     - make all tests
     - cd tests
     - ./run_tests.pl -f xml
-    - chmod a+x parseXML.py
-    - ./parseXML.py
+    #- chmod a+x parseXML.py
+    #- ./parseXML.py
