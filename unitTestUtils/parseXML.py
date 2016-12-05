@@ -9,11 +9,11 @@ for infile in glob.glob('*.xml'):
 		tree = ET.parse(infile)
 	except ParseError:
 		print "The file xml isn't correct. There were some mistakes in the tests "
-		break
+		return 1
 	else:
 		root = tree.getroot()
 		if ((root.findall('.//FatalError'))!=[]):
 			print "Error detected"
-			break
+			return 1
 	
  
