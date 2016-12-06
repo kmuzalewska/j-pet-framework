@@ -21,7 +21,7 @@ ClassImp(JPetTreeHeader);
 
 JPetTreeHeader::JPetTreeHeader():
   fRunNo(-1),
-  fBaseFilename("filename not set something"),
+  fBaseFilename("filename not set"),
   fSourcePosition(-1),
   emptyStage({"module not set", "description not set", -1, "-1"})
 {
