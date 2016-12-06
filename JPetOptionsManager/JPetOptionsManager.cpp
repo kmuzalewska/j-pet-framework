@@ -29,7 +29,7 @@ void JPetOptionsManager::createFileFromOptions(JPetOptions options){
 	JPetOptions::Options optionsToJson = options.getOptions(); 
 	pt::ptree optionsTree;
   	for (auto& entry: optionsToJson) 
-    	optionsTree.put (entry.first, entry.second);
+    		optionsTree.put (entry.first, entry.second);
  	pt::write_json("options.json", optionsTree); 
 }
 
@@ -42,6 +42,9 @@ JPetOptions JPetOptionsManager::createOptionsFromFile(std::string filename){
 			std::string stringIt = it->first;
 			(options.getOptions()).at( (stringIt))=optionsTree.get<std::string>(stringIt,0);
 		}
+	}else{
+		std::string error = "ERROR, FILE DO NOT EXISTS!";
+		throw error;
 	}
 	return JPetOptions(options);
 }
