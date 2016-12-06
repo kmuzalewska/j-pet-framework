@@ -21,30 +21,39 @@
 #include <set>
 #include <exception>
 #include <iostream>
+#include "../JPetLoggerInclude.h"
+
 namespace pt = boost::property_tree;
 
 JPetOptionsManager::JPetOptionsManager(){	
 }
-void JPetOptionsManager::createFileFromOptions(JPetOptions options){
+static void JPetOptionsManager::createFileFromOptions(const JPetOptions& options){
 	JPetOptions::Options optionsToJson = options.getOptions(); 
 	pt::ptree optionsTree;
   	for (auto& entry: optionsToJson) 
     		optionsTree.put (entry.first, entry.second);
- 	pt::write_json("options.json", optionsTree); 
+ 	try{
+		pt::write_json("options.json", optionsTree); 
+	}catch(json_parser_error){
+		ERROR("ERROR IN WRITING OPTIONS TO JSON FILE");
+	}
 }
 
-JPetOptions JPetOptionsManager::createOptionsFromFile(std::string filename){
-	JPetOptions options;
+static JPetOptions JPetOptionsManager::createOptionsFromFile(const std::string& filename){
 	pt::ptree optionsTree;
+	auto mapOptions = JPetOptions:: getDefaultOptions().getOptions();
 	if(JPetCommonTools::ifFileExisting(filename)){
-		pt::read_json(filename, optionsTree);
-		for(pt::ptree::const_iterator it = optionsTree.begin(); it != optionsTree.end(); ++it){
-			std::string stringIt = it->first;
-			(options.getOptions()).at( (stringIt))=optionsTree.get<std::string>(stringIt,0);
+		try{
+			pt::read_json(filename, optionsTree);
+			for(pt::ptree::const_iterator it = optionsTree.begin(); it != optionsTree.end(); ++it){
+				std::string stringIt = it->first;
+				mapOptions.at( (stringIt))=optionsTree.get<std::string>(stringIt,0);
+			}
+		}catch(json_parser_error){
+			ERROR("ERROR IN READINIG OPTIONS FROM JSON FILE! Dofault options will be returned" );
 		}
 	}else{
-		std::string error = "ERROR, FILE DO NOT EXISTS!";
-		throw error;
+		ERROR("JSON FILE DO NOT EXISTS! Dofault options will be returned ");
 	}
-	return JPetOptions(options);
+	return JPetOptions( mapOptions);
 }

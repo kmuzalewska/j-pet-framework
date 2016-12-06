@@ -23,7 +23,7 @@ class JPetOptionsManager{
 
 public:
 	JPetOptionsManager();
-	void createFileFromOptions(JPetOptions options);
-	JPetOptions createOptionsFromFile(std::string filename);
+	static void createFileFromOptions(JPetOptions options);
+	static JPetOptions createOptionsFromFile(std::string filename);
 };
 #endif
