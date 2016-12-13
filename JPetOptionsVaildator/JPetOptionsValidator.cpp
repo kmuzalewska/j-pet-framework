@@ -19,13 +19,7 @@ JPetOptionsValidator::JPetOptionsValidator(){}
 
 JPetOptionsValidator::JPetOptionsValidator(const Options& opts){}
 
-bool JPetOptionsValidator::areCorrect(const JPetOptionsManager& opts) const
-{
-  return true;
-}
-
-
-bool JPetCmdParser::areCorrectOptions(const po::variables_map& variablesMap) const
+bool JPetOptionsValidator::areCorrectOptions(const po::variables_map& variablesMap) const
 {
   /* Parse range of events */
   if (variablesMap.count("range")) {
