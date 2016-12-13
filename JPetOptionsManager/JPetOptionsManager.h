@@ -10,7 +10,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  @file JPetOptions.h
+ *  @file JPetOptionsManager.h
  */
 
 #ifndef JPETOPTIONSMANAGER_H
@@ -19,11 +19,69 @@
 #include <string>
 #include "../JPetOptions/JPetOptions.h"
 
-class JPetOptionsManager{
+class JPetOptionsManager: public JPetOptions{
 
 public:
-	JPetOptionsManager();
-	static void createFileFromOptions(JPetOptions options);
-	static JPetOptions createOptionsFromFile(std::string filename);
+  JPetOptionsManager();
+  explicit JPetOptionsManager(const Options& opts);
+  inline const char* getScopeConfigFile() const {
+    return fOptions.at("scopeConfigFile").c_str();
+  }
+  inline const char* getScopeInputDirectory() const {
+    return fOptions.at("scopeInputDirectory").c_str();
+  }
+  inline const char* getOutputFile() const {
+    return fOptions.at("outputFile").c_str();
+  }
+  inline const char* getOutputPath() const {
+    return fOptions.at("outputPath").c_str();
+  }
+  inline const char* getInputFile() const {
+    return fOptions.at("inputFile").c_str();
+  }  
+  inline long long getFirstEvent() const {
+    return std::stoll(fOptions.at("firstEvent"));
+  }
+  inline long long getLastEvent() const {
+    return std::stoll(fOptions.at("lastEvent"));
+  }
+  long long getTotalEvents() const;
+  
+  inline int getRunNumber() const {
+    return std::stoi(fOptions.at("runId"));
+  }
+  inline std::string getLocalDB() const {
+    std::string result("");
+    if (isLocalDB()) {
+      result = fOptions.at("localDB");
+    }
+    return result;
+  }
+  inline std::string getLocalDBCreate() const {
+    std::string result("");
+    if (isLocalDBCreate()) {
+      result = fOptions.at("localDBCreate");
+    }
+    return result;
+  } 
+  inline bool isProgressBar() const {
+    return JPetCommonTools::to_bool(fOptions.at("progressBar"));
+  }
+  FileType getInputFileType() const;
+  FileType getOutputFileType() const;
+
+  inline Options getOptions() const {
+    return fOptions;
+  }
+  static  Options getDefaultOptions() {
+    return kDefaultOptions;
+  }
+  inline bool isLocalDB() const {
+    return fOptions.count("localDB") > 0;
+  }
+  
+  inline bool isLocalDBCreate() const {
+    return fOptions.count("localDBCreate") > 0;
+  }  
 };
 #endif

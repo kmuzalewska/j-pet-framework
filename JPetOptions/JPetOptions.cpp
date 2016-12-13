@@ -89,20 +89,6 @@ void JPetOptions::setStringToFileTypeConversion()
   };
 }
 
-bool JPetOptions::areCorrect(const Options&) const
-{
-  return true;
-}
-
-JPetOptions::FileType JPetOptions::getInputFileType() const
-{
-  return handleFileType("inputFileType");
-}
-
-JPetOptions::FileType JPetOptions::getOutputFileType() const
-{
-  return handleFileType("outputFileType");
-}
 
 void JPetOptions::resetEventRange()
 {
@@ -118,18 +104,4 @@ JPetOptions::Options JPetOptions::resetEventRange(const Options& srcOpts)
   return opts; 
 }
 
-/// It returns the total number of events calculated from
-/// first and last event given in the range of events to calculate.
-/// If first or last event is set to -1 then the -1 is returned.
-/// If last - first < 0 then -1 is returned.
-/// Otherwise last - first +1 is returned.
-long long JPetOptions::getTotalEvents() const
-{
-  long long first = getFirstEvent();
-  long long last = getLastEvent();
-  long long diff = -1;
-  if ((first >= 0) && (last >= 0) && ((last - first) >= 0)) {
-    diff = last - first + 1;
-  }
-  return diff;
-}
+

@@ -14,46 +14,35 @@
  */
 
 #include "./JPetOptionsManager.h"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
-#include <string>
-#include <set>
-#include <exception>
-#include <iostream>
+#include "./JPetOptions.h"
 #include "../JPetLoggerInclude.h"
 
-namespace pt = boost::property_tree;
-
-JPetOptionsManager::JPetOptionsManager(){	
+JPetOptionsManager::JPetOptionsManager():JPetOptions(){	
 }
-static void JPetOptionsManager::createFileFromOptions(const JPetOptions& options){
-	JPetOptions::Options optionsToJson = options.getOptions(); 
-	pt::ptree optionsTree;
-  	for (auto& entry: optionsToJson) 
-    		optionsTree.put (entry.first, entry.second);
- 	try{
-		pt::write_json("options.json", optionsTree); 
-	}catch(json_parser_error){
-		ERROR("ERROR IN WRITING OPTIONS TO JSON FILE");
-	}
+JPetOptionsManager::JPetOptionsManager(const Options& opts):JPetOptions(opts){  
+}
+JPetOptionsManager::FileType JPetOptionsManager::getInputFileType() const
+{
+  return handleFileType("inputFileType");
 }
 
-static JPetOptions JPetOptionsManager::createOptionsFromFile(const std::string& filename){
-	pt::ptree optionsTree;
-	auto mapOptions = JPetOptions:: getDefaultOptions().getOptions();
-	if(JPetCommonTools::ifFileExisting(filename)){
-		try{
-			pt::read_json(filename, optionsTree);
-			for(pt::ptree::const_iterator it = optionsTree.begin(); it != optionsTree.end(); ++it){
-				std::string stringIt = it->first;
-				mapOptions.at( (stringIt))=optionsTree.get<std::string>(stringIt,0);
-			}
-		}catch(json_parser_error){
-			ERROR("ERROR IN READINIG OPTIONS FROM JSON FILE! Dofault options will be returned" );
-		}
-	}else{
-		ERROR("JSON FILE DO NOT EXISTS! Dofault options will be returned ");
-	}
-	return JPetOptions( mapOptions);
+JPetOptionsManager::FileType JPetOptionsManager::getOutputFileType() const
+{
+  return handleFileType("outputFileType");
+}
+
+/// It returns the total number of events calculated from
+/// first and last event given in the range of events to calculate.
+/// If first or last event is set to -1 then the -1 is returned.
+/// If last - first < 0 then -1 is returned.
+/// Otherwise last - first +1 is returned.
+long long JPetOptionsManager::getTotalEvents() const
+{
+  long long first = getFirstEvent();
+  long long last = getLastEvent();
+  long long diff = -1;
+  if ((first >= 0) && (last >= 0) && ((last - first) >= 0)) {
+    diff = last - first + 1;
+  }
+  return diff;
 }

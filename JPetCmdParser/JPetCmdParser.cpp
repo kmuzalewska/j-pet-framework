@@ -41,7 +41,7 @@ JPetCmdParser::~JPetCmdParser()
   /**/
 }
 
-std::vector<JPetOptions> JPetCmdParser::parseAndGenerateOptions(int argc, const char** argv)
+std::vector<JPetOptionsManagerManager> JPetCmdParser::parseAndGenerateOptions(int argc, const char** argv)
 {
   po::variables_map variablesMap;
   if (argc == 1) {
@@ -139,9 +139,9 @@ bool JPetCmdParser::areCorrectOptions(const po::variables_map& variablesMap) con
   return true;
 }
 
-std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map& optsMap) const
+std::vector<JPetOptionsManagerManager> JPetCmdParser::generateOptions(const po::variables_map& optsMap) const
 {
-  std::map<std::string, std::string> options = JPetOptions::getDefaultOptions();
+  std::map<std::string, std::string> options = JPetOptionsManagerManager::getDefaultOptions();
   auto fileType = getFileType(optsMap);
   if (isCorrectFileType(fileType)) {
     options.at("inputFileType") = fileType;
@@ -167,7 +167,7 @@ std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map&
   if (lastEvent >= 0) options.at("lastEvent") = std::to_string(lastEvent);
 
   auto files = getFileNames(optsMap);
-  std::vector<JPetOptions>  optionContainer;
+  std::vector<JPetOptionsManagerManager>  optionContainer;
   /// In case of scope there is one special input file
   /// which is a json config file which must be parsed.
   /// Based on its content the set of input directories are generated.
@@ -187,13 +187,13 @@ std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map&
     for (auto dirAndFile : dirsAndFiles) {
       options.at("scopeInputDirectory") = dirAndFile.first;
       options.at("inputFile") = dirAndFile.second;
-      optionContainer.push_back(JPetOptions(options));
+      optionContainer.push_back(JPetOptionsManagerManager(options));
     }
   } else {
-    /// for every single input file we create separate JPetOptions
+    /// for every single input file we create separate JPetOptionsManagerManager
     for (auto file : files) {
       options.at("inputFile") = file;
-      optionContainer.push_back(JPetOptions(options));
+      optionContainer.push_back(JPetOptionsManagerManager(options));
     }
   }
   return optionContainer;
