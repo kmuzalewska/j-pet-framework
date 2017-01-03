@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_SUITE(JPetTreeHeaderSuite)
 BOOST_AUTO_TEST_CASE(emptyHeader){
 	JPetTreeHeader treeHeader;
 	BOOST_REQUIRE_EQUAL(treeHeader.getRunNumber(), -1 );
-	BOOST_REQUIRE_EQUAL(treeHeader.getBaseFileName(), "filename not set" );
+	BOOST_REQUIRE_EQUAL(treeHeader.getBaseFileName(), " filename not set" );
 	BOOST_REQUIRE_EQUAL(treeHeader.getSourcePosition(), -1 );
 	BOOST_REQUIRE_EQUAL(treeHeader.getStagesNb(), 0 );
 	BOOST_REQUIRE_EQUAL(treeHeader.getProcessingStageInfo(0).fModuleName, "module not set");
