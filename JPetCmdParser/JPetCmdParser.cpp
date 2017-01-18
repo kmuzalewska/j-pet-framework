@@ -65,22 +65,49 @@ std::vector<JPetOptions> JPetCmdParser::parseAndGenerateOptions(int argc, const 
   if (!areCorrectOptions(variablesMap)) {
     throw std::invalid_argument("Wrong user options provided! Check the log!");
   }
+  std::map<std::string, std::string> optionsFromJson; 
   if(variablesMap.count("json")){
-    JPetOptions optionsFromJson = JPetOptionsJson::createOptionsFromFile(variablesMap["json"].as<std::string>());
-    std::pair<std::map<char,int>::iterator,bool> ret;
-    for(auto const& iter : optionsFromJson.getOptions()){
-      ret = variablesMap.insert( std::pair<std::string, variables_value>(iter.first,iter.second) ); 
-      if((!ret.second) && (iter.second != variablesMap[iter.first].as< std::vector<std::string> >())){
-	  ERROR("Options from json and from command line are invalid");
-	  throw std::invalid_argument("Check the json file and options from command line");
-      }	
+    auto jsonCfgFile = variablesMap["json"].as<std::string>();
+    optionsFromJson = JPetOptionsJson::createOptionsFromFile(jsonCfgFile);
+  }
+  auto mergedOptions = mergeOptions(optionsFromJson, variablesMap);
+  return generateOptions(mergedOptions);
+}
+po::variables_map JPetCmdParser::mergeOptions(const std::map<std::string, std::string>& options, po::variables_map variableMap){
+  std::pair<po::variables_map::iterator,bool> ret;
+  //variableMap.at("bla").value()="ble";
+  for(auto const& iter : options){
+    ret = variableMap.insert( std::make_pair(iter.first, po::variable_value(iter.second, false))); 
+    if((!(ret.second)) && (iter.second != variableMap[iter.first].as<std::string>())){
+      ERROR("Options from json and from command line are invalid");
+      throw std::invalid_argument("Check the json file and options from command line");
+    }	
+  }
+  return variableMap;
+}
+std::vector<std::string> JPetCmdParser::getKeysFromVariableMap(po::variables_map optionMap) const{
+  std::vector<std::string> keys;
+  for(auto const& imap: optionMap)
+    keys.push_back(imap.first);
+  return keys;
+}
+std::vector<std::string> JPetCmdParser::substractDwoVectors(std::vector<std::string>& bigV, std::vector<std::string>& smallV) const{
+  std::sort(bigV.begin(), bigV.end());
+  std::sort(smallV.begin(), smallV.end());
+  std::vector<std::string> resultV;
+  unsigned int i=0;
+  unsigned int j=0 ;
+  while(i<bigV.size() && j< smallV.size()){
+    if(bigV[i]==smallV[i]){
+      resultV.push_back(bigV[i]); }
+    else if(bigV[i]>smallV[j]){
+      j++; } 
+    else{
+      i++;
     }
   }
-
-
-  return generateOptions(variablesMap);
-}
-
+  return resultV;
+} 
 bool JPetCmdParser::areCorrectOptions(const po::variables_map& variablesMap) const
 {
   /* Parse range of events */
@@ -181,6 +208,14 @@ std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map&
   auto lastEvent  = getHigherEventBound(optsMap);
   if (firstEvent >= 0) options.at("firstEvent") = std::to_string(firstEvent);
   if (lastEvent >= 0) options.at("lastEvent") = std::to_string(lastEvent);
+
+  std::vector<std::string> variableKey = getKeysFromVariableMap(optsMap); 
+  std::vector<std::string> validKey = {"inputFileType", "outputPath", "runId", "progressBar", "localDB", "localDBCreate"};
+  auto optionsToAdd = JPetCmdParser::substractDwoVectors(variableKey, variableKey);
+  for(const auto key:optionsToAdd){
+    options.at(key) = optsMap[key].as<std::string>();
+  } 
+
 
   auto files = getFileNames(optsMap);
   std::vector<JPetOptions>  optionContainer;
