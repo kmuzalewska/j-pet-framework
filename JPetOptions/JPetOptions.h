@@ -33,72 +33,8 @@ public:
 
   JPetOptions();
   explicit JPetOptions(const Options& opts);
-
-  bool areCorrect(const Options&) const;
-  inline const char* getInputFile() const {
-    return fOptions.at("inputFile").c_str();
-  }
-  inline const char* getScopeConfigFile() const {
-    return fOptions.at("scopeConfigFile").c_str();
-  }
-  inline const char* getScopeInputDirectory() const {
-    return fOptions.at("scopeInputDirectory").c_str();
-  }
-  inline const char* getOutputFile() const {
-    return fOptions.at("outputFile").c_str();
-  }
-  inline const char* getOutputPath() const {
-    return fOptions.at("outputPath").c_str();
-  }
-  inline long long getFirstEvent() const {
-    return std::stoll(fOptions.at("firstEvent"));
-  }
-  inline long long getLastEvent() const {
-    return std::stoll(fOptions.at("lastEvent"));
-  }
-  long long getTotalEvents() const;
-
-  inline int getRunNumber() const {
-    return std::stoi(fOptions.at("runId"));
-  }
-  inline bool isProgressBar() const {
-    return JPetCommonTools::to_bool(fOptions.at("progressBar"));
-  }
-  inline bool isLocalDB() const {
-    return fOptions.count("localDB") > 0;
-  }
-  inline std::string getLocalDB() const {
-    std::string result("");
-    if (isLocalDB()) {
-      result = fOptions.at("localDB");
-    }
-    return result;
-  }
-  inline bool isLocalDBCreate() const {
-    return fOptions.count("localDBCreate") > 0;
-  }
-  inline std::string getLocalDBCreate() const {
-    std::string result("");
-    if (isLocalDBCreate()) {
-      result = fOptions.at("localDBCreate");
-    }
-    return result;
-  }
-
-  FileType getInputFileType() const;
-  FileType getOutputFileType() const;
-
-  inline Options getOptions() const {
-    return fOptions;
-  }
-
   void resetEventRange();
   static Options resetEventRange(const Options& srcOpts);
-
-
-  static  Options getDefaultOptions() {
-    return kDefaultOptions;
-  }
 
 protected:
   static Options kDefaultOptions;

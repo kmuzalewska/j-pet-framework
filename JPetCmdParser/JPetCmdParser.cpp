@@ -33,7 +33,8 @@ JPetCmdParser::JPetCmdParser(): fOptionsDescriptions("Allowed options")
   ("runId,i", po::value<int>(), "Run id.")
   ("progressBar,b", po::bool_switch()->default_value(false), "Progress bar.")
   ("localDB,l", po::value<std::string>(), "The file to use as the parameter database.")
-  ("localDBCreate,L", po::value<std::string>(), "File name to which the parameter database will be saved.");
+  ("localDBCreate,L", po::value<std::string>(), "File name to which the parameter database will be saved.")
+  ("json,j", po::value<std::string>(), "Json file with options.");
 }
 
 JPetCmdParser::~JPetCmdParser()
@@ -41,7 +42,7 @@ JPetCmdParser::~JPetCmdParser()
   /**/
 }
 
-std::vector<JPetOptions> JPetCmdParser::parseAndGenerateOptions(int argc, const char** argv)
+std::vector<JPetOptionsManager> JPetCmdParser::parseAndGenerateOptions(int argc, const char** argv)
 {
   po::variables_map variablesMap;
   if (argc == 1) {
@@ -139,9 +140,9 @@ bool JPetCmdParser::areCorrectOptions(const po::variables_map& variablesMap) con
   return true;
 }
 
-std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map& optsMap) const
+std::vector<JPetOptionsManager> JPetCmdParser::generateOptions(const po::variables_map& optsMap) const
 {
-  std::map<std::string, std::string> options = JPetOptions::getDefaultOptions();
+  std::map<std::string, std::string> options = JPetOptionsManager::getDefaultOptions();
   auto fileType = getFileType(optsMap);
   if (isCorrectFileType(fileType)) {
     options.at("inputFileType") = fileType;
@@ -167,7 +168,7 @@ std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map&
   if (lastEvent >= 0) options.at("lastEvent") = std::to_string(lastEvent);
 
   auto files = getFileNames(optsMap);
-  std::vector<JPetOptions>  optionContainer;
+  std::vector<JPetOptionsManager>  optionContainer;
   /// In case of scope there is one special input file
   /// which is a json config file which must be parsed.
   /// Based on its content the set of input directories are generated.
@@ -187,13 +188,13 @@ std::vector<JPetOptions> JPetCmdParser::generateOptions(const po::variables_map&
     for (auto dirAndFile : dirsAndFiles) {
       options.at("scopeInputDirectory") = dirAndFile.first;
       options.at("inputFile") = dirAndFile.second;
-      optionContainer.push_back(JPetOptions(options));
+      optionContainer.push_back(JPetOptionsManager(options));
     }
   } else {
-    /// for every single input file we create separate JPetOptions
+    /// for every single input file we create separate JPetOptionsManager
     for (auto file : files) {
       options.at("inputFile") = file;
-      optionContainer.push_back(JPetOptions(options));
+      optionContainer.push_back(JPetOptionsManager(options));
     }
   }
   return optionContainer;
